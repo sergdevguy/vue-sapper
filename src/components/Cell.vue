@@ -32,7 +32,7 @@
 </script>
 
 <template>
-  <div class="w-7 h-7 relative select-none">
+  <div class="w-7.5 h-7.5 relative select-none">
     <div :class="smoothHideClass"
       class="absolute top-0 left-0 w-full h-full border-1 border-stone-700 bg-stone-500 font-bold cursor-pointer transition-all duration-160 ease-in">
     </div>

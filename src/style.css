@@ -11,15 +11,4 @@
     75% { transform: translate(0px, 1px); }
     90% { transform: translate(-3px, 2px); }
   }
-
-  --animate-sweem: sweem 3s ease-in-out infinite;
-  @keyframes sweem {
-    0%,
-    100% {
-      transform: rotate(-0.4deg);
-    }
-    50% {
-      transform: rotate(0.4deg);
-    }
-  }
 }

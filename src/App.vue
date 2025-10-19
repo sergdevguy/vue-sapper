@@ -27,9 +27,9 @@
     isHighlight: boolean
   }
 
-  const INIT_ROWS = 20
+  const INIT_ROWS = 18
   const INIT_COLS = 12
-  const INIT_BOMBS = 24
+  const INIT_BOMBS = 15
 
   const config = ref({
     rows: INIT_ROWS,
@@ -74,7 +74,6 @@
   const shakeAnimClass = computed(() => {
     return {
       'animate-shake': state.value.status === 'loose' || state.value.status === 'gameover' && !state.value.lifes,
-      'animate-sweem': !state.value.status
     }
   })
 
@@ -240,7 +239,11 @@
     showBombs(cellId)
 
     state.value.lifes -= 1
-    state.value.status = state.value.lifes ? 'loose' : 'gameover'
+    if (!state.value.lifes || state.value.levels - state.value.level === 0) {
+      state.value.status = 'gameover'
+    } else {
+      state.value.status = 'loose'
+    }
   }
 
   function showBombs(loosedCell: [number, number]) {
@@ -340,7 +343,7 @@
     <div class="relative z-2 mb-5 flex gap-3">
       <TransitionGroup name="lifes">
         <div v-for="i in state.lifes" :key="i"
-          class="w-[30px] h-[30px] bg-size-[70%] bg-center bg-no-repeat bg-sky-600/60 rounded-sm"
+          class="w-[24px] h-[24px] bg-size-[70%] bg-center bg-no-repeat bg-sky-600/60 rounded-sm"
           :style="{ backgroundImage: `url(${life})` }"></div>
       </TransitionGroup>
     </div>
