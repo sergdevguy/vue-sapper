@@ -108,39 +108,12 @@
       const randomInt = getRandomInt(availableBombsPlaces.length)
       const newBombPlace: [number, number] = availableBombsPlaces[randomInt]!
       field.value[newBombPlace[0]]![newBombPlace[1]]!.isBomb = true
-      numberedAroundBomb(newBombPlace)
+      getSiblingsCells(newBombPlace).forEach((cell: Cell) => {
+        cell.count += 1
+      })
       availableBombsPlaces.splice(randomInt, 1)
 
       bombsId.value.push(newBombPlace)
-    }
-  }
-
-  // TODO переписать нормально этот треш
-  function numberedAroundBomb(bombPlace: number[]) {
-    const [row, cell] = bombPlace
-    if (row) {
-      field.value[row - 1][cell].count += 1
-      if (cell) {
-        field.value[row - 1][cell - 1].count += 1
-      }
-      if (cell < config.value.cols - 1) {
-        field.value[row - 1][cell + 1].count += 1
-      }
-    }
-    if (row < config.value.rows - 1) {
-      field.value[row + 1][cell].count += 1
-      if (cell) {
-        field.value[row + 1][cell - 1].count += 1
-      }
-      if (cell < config.value.cols - 1) {
-        field.value[row + 1][cell + 1].count += 1
-      }
-    }
-    if (cell) {
-      field.value[row][cell - 1].count += 1
-    }
-    if (cell < config.value.cols - 1) {
-      field.value[row][cell + 1].count += 1
     }
   }
 
@@ -202,34 +175,24 @@
         level++;
       }
     }
+  }
 
-    function getSiblingsCells(id: [number, number]) {
-      const siblingIds = getSiblingsIds(id)
+  function getSiblingsCells(id: [number, number]): Cell[] {
+    const siblingsId = [
+      [-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]
+    ]
 
-      const res = []
-      for (let i = 0; i < siblingIds.length; i++) {
-        const cellId = siblingIds[i]
-        res.push(field.value[cellId[0]][cellId[1]])
+    const acceptedSiblings: Cell[] = []
+
+    for (let i = 0; i < siblingsId.length; i++) {
+      const sibling = [id[0] + siblingsId[i]![0]!, id[1] + siblingsId[i]![1]!]
+      // cell in field
+      if (sibling[0] >= 0 && sibling[0] < config.value.rows && sibling[1] >= 0 && sibling[1] < config.value.cols) {
+        acceptedSiblings.push(field.value[sibling[0]][sibling[1]])
       }
-      return res
     }
 
-    function getSiblingsIds(id: [number, number]): Array<[number, number]> {
-      const siblingsId = [
-        [-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]
-      ]
-      const acceptedSiblings: Array<[number, number]> = []
-
-      for (let i = 0; i < siblingsId.length; i++) {
-        const sibling = [id[0] + siblingsId[i][0], id[1] + siblingsId[i][1]]
-        // cell in field
-        if (sibling[0] >= 0 && sibling[0] < config.value.rows && sibling[1] >= 0 && sibling[1] < config.value.cols) {
-          acceptedSiblings.push(sibling)
-        }
-      }
-
-      return acceptedSiblings
-    }
+    return acceptedSiblings
   }
 
   function loose(cellId: [number, number]) {
