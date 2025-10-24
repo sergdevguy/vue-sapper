@@ -29,7 +29,7 @@
 
   const INIT_ROWS = 18
   const INIT_COLS = 12
-  const INIT_BOMBS = 15
+  const INIT_BOMBS = 16
 
   const config = ref({
     rows: INIT_ROWS,
