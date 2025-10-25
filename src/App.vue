@@ -5,14 +5,16 @@
   import ModalWin from './components/ModalWin.vue'
   import ModalGameover from './components/ModalGameover.vue'
   import life from './assets/life.png'
+  import { GAME_CONFIG } from './gameConfig'
 
   type State = {
     status: Status
     bonus: Bonus
     lifes: number
     gold: number
-    levels: number
     level: number
+    bombs: number
+    field: { rows: number, cols: number }
   }
 
   type Status = 'loose' | 'win' | 'gameover' | ''
@@ -27,23 +29,14 @@
     isHighlight: boolean
   }
 
-  const INIT_ROWS = 18
-  const INIT_COLS = 12
-  const INIT_BOMBS = 16
-
-  const config = ref({
-    rows: INIT_ROWS,
-    cols: INIT_COLS,
-    bombs: INIT_BOMBS
-  })
-
   const state = ref<State>({
     status: '',
     bonus: '',
-    lifes: 3,
-    gold: 0,
-    levels: 6,
-    level: 1
+    lifes: GAME_CONFIG.initialLifes,
+    gold: GAME_CONFIG.initialGold,
+    level: GAME_CONFIG.initialLevel,
+    bombs: GAME_CONFIG.initialBombs,
+    field: { ...GAME_CONFIG.initialField }
   })
 
   const field = ref<Array<Cell[]>>([])
@@ -63,7 +56,7 @@
   })
 
   const fieldSize = computed(() => {
-    return config.value.rows * config.value.cols
+    return state.value.field.rows * state.value.field.cols
   })
 
   // TODO больно.. нужен плоский массив поля
@@ -79,10 +72,10 @@
 
   function createField() {
     const newField: Cell[][] = []
-    for (let i = 0; i < config.value.rows; i++) {
+    for (let i = 0; i < state.value.field.rows; i++) {
       const row: Cell[] = []
 
-      for (let j = 0; j < config.value.cols; j++) {
+      for (let j = 0; j < state.value.field.cols; j++) {
         row.push({
           id: [i, j],
           isOpened: false,
@@ -97,28 +90,26 @@
   }
 
   function createBombs() {
-    const availableBombsPlaces: Array<[number, number]> = []
-    for (let i = 0; i < config.value.rows; i++) {
-      for (let j = 0; j < config.value.cols; j++) {
-        availableBombsPlaces.push([i, j])
-      }
+    const arr: number[] = []
+
+    for (let i = 0; i < fieldSize.value; i++) {
+      arr.push(i)
     }
 
-    for (let i = 0; i < config.value.bombs; i++) {
-      const randomInt = getRandomInt(availableBombsPlaces.length)
-      const newBombPlace: [number, number] = availableBombsPlaces[randomInt]!
-      field.value[newBombPlace[0]]![newBombPlace[1]]!.isBomb = true
-      getSiblingsCells(newBombPlace).forEach((cell: Cell) => {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]]
+    }
+
+    for (let i = 0; i < state.value.bombs; i++) {
+      const row = Math.trunc(arr[i] / state.value.field.cols)
+      const col = arr[i] % state.value.field.cols
+      field.value[row][col].isBomb = true
+      getSiblingsCells([row, col]).forEach((cell: Cell) => {
         cell.count += 1
       })
-      availableBombsPlaces.splice(randomInt, 1)
-
-      bombsId.value.push(newBombPlace)
+      bombsId.value.push([row, col])
     }
-  }
-
-  function getRandomInt(max: number): number {
-    return Math.floor(Math.random() * max)
   }
 
   function openCell(cellId: [number, number]) {
@@ -187,7 +178,7 @@
     for (let i = 0; i < siblingsId.length; i++) {
       const sibling = [id[0] + siblingsId[i]![0]!, id[1] + siblingsId[i]![1]!]
       // cell in field
-      if (sibling[0] >= 0 && sibling[0] < config.value.rows && sibling[1] >= 0 && sibling[1] < config.value.cols) {
+      if (sibling[0] >= 0 && sibling[0] < state.value.field.rows && sibling[1] >= 0 && sibling[1] < state.value.field.cols) {
         acceptedSiblings.push(field.value[sibling[0]][sibling[1]])
       }
     }
@@ -202,7 +193,7 @@
     showBombs(cellId)
 
     state.value.lifes -= 1
-    if (!state.value.lifes || state.value.levels - state.value.level === 0) {
+    if (!state.value.lifes || GAME_CONFIG.totalLevels - state.value.level === 0) {
       state.value.status = 'gameover'
     } else {
       state.value.status = 'loose'
@@ -225,8 +216,8 @@
 
   function reset() {
     if (state.value.status === 'win') {
-      config.value.rows -= 1
-      config.value.bombs += 1
+      state.value.field.rows -= 1
+      state.value.bombs += 1
     }
 
     state.value.bonus = ''
@@ -243,9 +234,9 @@
     state.value.level = 0
     state.value.gold = 0
     state.value.lifes = 3
-    config.value.bombs = INIT_BOMBS
-    config.value.rows = INIT_ROWS
-    config.value.cols = INIT_COLS
+    state.value.bombs = GAME_CONFIG.initialBombs
+    state.value.field.rows = GAME_CONFIG.initialField.rows
+    state.value.field.cols = GAME_CONFIG.initialField.cols
     reset()
   }
 
@@ -262,17 +253,17 @@
 
     switch (state.value.bonus) {
       case 'bombsInc':
-        config.value.bombs += 2
+        state.value.bombs += 2
         break;
       case 'fieldDec':
-        config.value.rows -= 1
+        state.value.field.rows -= 1
         break;
       case 'gold':
         state.value.gold += 100
         break;
       case 'notChangeDifficulty':
-        config.value.bombs -= 1
-        config.value.rows += 1
+        state.value.bombs -= 1
+        state.value.field.rows += 1
         break;
       default:
         break;
@@ -283,8 +274,8 @@
 
   // проверяем на победу (фиксируем в state.status)
   watch(() => openedCellsCount.value, () => {
-    const isWin = fieldSize.value - openedCellsCount.value === config.value.bombs
-    if (state.value.levels - state.value.level === 0 && isWin) {
+    const isWin = fieldSize.value - openedCellsCount.value === state.value.bombs
+    if (GAME_CONFIG.totalLevels - state.value.level === 0 && isWin) {
       state.value.status = 'gameover'
     } else if (isWin && state.value.status !== 'loose') {
       state.value.status = 'win'
@@ -300,7 +291,7 @@
       <ModalGameover v-else-if="state.status === 'gameover'" />
     </Transition>
     <div class="mb-2 text-center text-white font-light">
-      <div>Уровень: {{ state.level }} из {{ state.levels }}</div>
+      <div>Уровень: {{ state.level }} из {{ GAME_CONFIG.totalLevels }}</div>
       <div>Золото: <span class="text-amber-300">{{ state.gold }}</span></div>
     </div>
     <div class="relative z-2 mb-5 flex gap-3">
