@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { computed, onMounted, provide, ref, watch } from 'vue'
+  import Field from './components/Field.vue'
   import Cell from './components/Cell.vue'
   import ModalLoose from './components/ModalLoose.vue'
   import ModalWin from './components/ModalWin.vue'
@@ -301,11 +302,7 @@
           :style="{ backgroundImage: `url(${life})` }"></div>
       </TransitionGroup>
     </div>
-    <div :class="shakeAnimClass" class="relative border-4 rounded-md border-sky-600 bg-sky-600">
-      <div v-for="row in field" class="flex">
-        <Cell v-for="cell in row" :cell @click="openCell(cell.id)" />
-      </div>
-    </div>
+    <Field :field @open="openCell" :class="shakeAnimClass" />
   </div>
 </template>
 
