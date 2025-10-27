@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { computed } from 'vue';
-  import type { Cell } from '../App.vue';
   import octopus from '../assets/octopus.png';
+  import type { CellData } from '../types';
 
   const props = defineProps<{
-    cell: Cell
+    cell: CellData
   }>()
 
   const COUNT_COLOR_MAP: Record<number, string> = {
@@ -29,11 +29,17 @@
       'bg-red-700': props.cell.isHighlight,
     }
   })
+
+  const test = computed(() => {
+    if (props.cell.isBomb) {
+      return { 'background': 'red' }
+    }
+  })
 </script>
 
 <template>
   <div class="w-7.5 h-7.5 relative select-none">
-    <div :class="smoothHideClass"
+    <div :class="smoothHideClass" :style="test"
       class="absolute top-0 left-0 w-full h-full border-1 border-stone-700 bg-stone-500 font-bold cursor-pointer transition-all duration-160 ease-in">
     </div>
     <div v-if="cell.isOpened" class="w-full h-full flex items-center justify-center border-1 border-sky-700/40">
