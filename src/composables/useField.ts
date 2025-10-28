@@ -1,16 +1,16 @@
 import { computed, ref } from "vue";
-import type { CellData } from "../types";
-import { GAME_CONFIG } from "../gameConfig";
+import type { CellData, FieldSize } from "../types";
+import { getSiblingsCells } from "../utils/main";
 
-export function useField() {
+export function useField(size: FieldSize, bombs: number) {
 
   const field = ref<CellData[]>([])
 
   const fieldRows = computed(() => {
     const result: CellData[][] = []
-    for (let i = 0; i < GAME_CONFIG.initialField.rows; i++) {
-      const start = i * GAME_CONFIG.initialField.cols
-      const end = start + GAME_CONFIG.initialField.cols
+    for (let i = 0; i < size.rows; i++) {
+      const start = i * size.cols
+      const end = start + size.cols
       result.push(field.value.slice(start, end))
     }
     return result
@@ -39,45 +39,22 @@ export function useField() {
       [arr[i], arr[j]] = [arr[j], arr[i]]
     }
 
-    for (let i = 0; i < GAME_CONFIG.initialBombs; i++) {
+    for (let i = 0; i < bombs; i++) {
       field.value[arr[i]].isBomb = true
-      getSiblingsCells(arr[i]).forEach((cell: CellData) => {
+      getSiblingsCells(arr[i]!, field, size).forEach((cell: CellData) => {
         cell.count += 1
       })
     }
   }
 
-  function getSiblingsCells(cellId: number): CellData[] {
-    const rows = GAME_CONFIG.initialField.rows
-    const cols = GAME_CONFIG.initialField.cols
-    const row = Math.floor(cellId / cols)
-    const col = cellId % cols
-
-    const siblings: CellData[] = []
-
-    for (let r = -1; r <= 1; r++) {
-      for (let c = -1; c <= 1; c++) {
-        if (r === 0 && c === 0) continue
-
-        const newRow = row + r
-        const newCol = col + c
-
-        if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
-          siblings.push(field.value[newRow * cols + newCol])
-        }
-      }
-    }
-
-    return siblings
-  }
-
   function initField() {
-    field.value = createField(GAME_CONFIG.initialField.rows, GAME_CONFIG.initialField.cols)
+    field.value = []
+    field.value = createField(size.rows, size.cols)
     createBombsOnField()
   }
 
   initField()
 
-  return { fieldRows }
+  return { field, fieldRows }
 
 }

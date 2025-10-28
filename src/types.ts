@@ -5,12 +5,14 @@ export type State = {
   gold: number
   level: number
   bombs: number
-  field: { rows: number, cols: number }
+  field: FieldSize
 }
 
-type Status = 'loose' | 'win' | 'gameover' | ''
+export type Status = 'idle' | 'loose' | 'win' | 'gameover'
 
 type Bonus = 'bombsInc' | 'fieldDec' | 'gold' | 'notChangeDifficulty' | ''
+
+export type FieldSize = { rows: number, cols: number }
 
 export type CellData = {
   id: number
