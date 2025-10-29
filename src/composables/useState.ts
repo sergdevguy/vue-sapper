@@ -14,10 +14,17 @@ export function useState() {
       gold: GAME_CONFIG.initialGold,
       level: GAME_CONFIG.initialLevel,
       bombs: GAME_CONFIG.initialBombs,
-      field: { ...GAME_CONFIG.initialField }
+      fieldSize: { ...GAME_CONFIG.initialField }
     }
   }
 
-  return { state }
+  function reset() {
+    initBaseData()
+  }
+
+  return { 
+    state, 
+    stateActions: { reset } 
+  }
 
 }

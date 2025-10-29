@@ -4,15 +4,25 @@ import { useState } from "./useState"
 
 export function useGame() {
 
-  const { state } = useState()
-  const { field, fieldRows } = useField(state.value.field, state.value.bombs)
-  const { openCellHandler } = useGameLogic(field, state.value.field)
+  const { state, stateActions } = useState()
+  const { field, fieldRows, fieldActions } = useField(state.value.fieldSize, state.value.bombs)
+  const { openCellHandler } = useGameLogic(field, state.value.fieldSize)
 
   function handleCellOpen(id: number) {
     const result = openCellHandler(id)
-    alert(result)
-    // if (result.status === 'lose') screen.value = 'punishment'
-    // if (result.status === 'win') screen.value = 'shop'
+    if (result === 'loose') {
+      resetGame()
+    }
+    if (result === 'win') {
+      resetGame()
+    }
+  }
+
+  function resetGame() {
+    setTimeout(() => {
+      stateActions.reset()
+      fieldActions.reset()
+    }, 1000)
   }
 
   return {

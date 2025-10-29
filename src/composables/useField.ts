@@ -53,8 +53,16 @@ export function useField(size: FieldSize, bombs: number) {
     createBombsOnField()
   }
 
+  function reset() {
+    initField()
+  }
+
   initField()
 
-  return { field, fieldRows }
+  return {
+    field,
+    fieldRows,
+    fieldActions: { reset }
+  }
 
 }

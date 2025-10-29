@@ -5,7 +5,7 @@ export type State = {
   gold: number
   level: number
   bombs: number
-  field: FieldSize
+  fieldSize: FieldSize
 }
 
 export type Status = 'idle' | 'loose' | 'win' | 'gameover'
