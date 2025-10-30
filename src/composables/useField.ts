@@ -1,8 +1,8 @@
-import { computed, ref } from "vue";
+import { computed, ref, type ComputedRef } from "vue";
 import type { CellData, FieldSize } from "../types";
 import { getSiblingsCells } from "../utils/main";
 
-export function useField(size: FieldSize, bombs: number) {
+export function useField(size: FieldSize, bombs: ComputedRef<number>) {
 
   const field = ref<CellData[]>([])
 
@@ -23,6 +23,7 @@ export function useField(size: FieldSize, bombs: number) {
       isBomb: false,
       count: 0,
       isHighlight: false,
+      visited: false
     }))
   }
 
@@ -39,7 +40,7 @@ export function useField(size: FieldSize, bombs: number) {
       [arr[i], arr[j]] = [arr[j], arr[i]]
     }
 
-    for (let i = 0; i < bombs; i++) {
+    for (let i = 0; i < bombs.value; i++) {
       field.value[arr[i]].isBomb = true
       getSiblingsCells(arr[i]!, field, size).forEach((cell: CellData) => {
         cell.count += 1

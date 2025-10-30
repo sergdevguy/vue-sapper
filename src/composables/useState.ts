@@ -18,6 +18,10 @@ export function useState() {
     }
   }
 
+  function nextLevel() {
+    state.value.level += 1
+  }
+
   function reset() {
     initBaseData()
   }

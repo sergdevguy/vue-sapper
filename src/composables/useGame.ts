@@ -1,3 +1,4 @@
+import { computed } from "vue"
 import { useField } from "./useField"
 import { useGameLogic } from "./useGameLogic"
 import { useState } from "./useState"
@@ -5,7 +6,7 @@ import { useState } from "./useState"
 export function useGame() {
 
   const { state, stateActions } = useState()
-  const { field, fieldRows, fieldActions } = useField(state.value.fieldSize, state.value.bombs)
+  const { field, fieldRows, fieldActions } = useField(state.value.fieldSize, computed(() => state.value.bombs))
   const { openCellHandler } = useGameLogic(field, state.value.fieldSize)
 
   function handleCellOpen(id: number) {
@@ -26,6 +27,7 @@ export function useGame() {
   }
 
   return {
+    state,
     fieldRows,
     actions: { handleCellOpen }
   }
