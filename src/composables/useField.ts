@@ -1,16 +1,17 @@
-import { computed, ref, type ComputedRef } from "vue";
+import { computed, ref } from "vue";
 import type { CellData, FieldSize } from "../types";
 import { getSiblingsCells } from "../utils/main";
 
-export function useField(size: FieldSize, bombs: ComputedRef<number>) {
+export function useField() {
 
   const field = ref<CellData[]>([])
+  const fieldSize = ref<FieldSize>({ rows: 0, cols: 0 })
 
   const fieldRows = computed(() => {
     const result: CellData[][] = []
-    for (let i = 0; i < size.rows; i++) {
-      const start = i * size.cols
-      const end = start + size.cols
+    for (let i = 0; i < fieldSize.value.rows; i++) {
+      const start = i * fieldSize.value.cols
+      const end = start + fieldSize.value.cols
       result.push(field.value.slice(start, end))
     }
     return result
@@ -27,7 +28,7 @@ export function useField(size: FieldSize, bombs: ComputedRef<number>) {
     }))
   }
 
-  function createBombsOnField() {
+  function createBombsOnField(count: number, size: FieldSize) {
     const arr: number[] = []
 
     for (let i = 0; i < field.value.length; i++) {
@@ -40,7 +41,7 @@ export function useField(size: FieldSize, bombs: ComputedRef<number>) {
       [arr[i], arr[j]] = [arr[j], arr[i]]
     }
 
-    for (let i = 0; i < bombs.value; i++) {
+    for (let i = 0; i < count; i++) {
       field.value[arr[i]].isBomb = true
       getSiblingsCells(arr[i]!, field, size).forEach((cell: CellData) => {
         cell.count += 1
@@ -48,22 +49,21 @@ export function useField(size: FieldSize, bombs: ComputedRef<number>) {
     }
   }
 
-  function initField() {
+  function init(size: FieldSize, bombs: number) {
+    fieldSize.value = size
     field.value = []
     field.value = createField(size.rows, size.cols)
-    createBombsOnField()
+    createBombsOnField(bombs, size)
   }
 
-  function reset() {
-    initField()
+  function reset(size: FieldSize, bombs: number) {
+    init(size, bombs)
   }
-
-  initField()
 
   return {
     field,
     fieldRows,
-    fieldActions: { reset }
+    fieldActions: { init, reset }
   }
 
 }

@@ -6,8 +6,9 @@ type OpenResult = { count: number, isBomb: boolean }
 
 export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
 
-  const openedCount = ref(0)
-  const status = ref<Status>('idle')
+  const openedCellsCount = computed(() =>
+    field.value.filter(cell => cell.isOpened).length
+  )
 
   const cellsToOpenCount = computed(() => {
     return field.value.length - field.value.filter((cell) => cell.isBomb).length
@@ -16,7 +17,7 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
   function openCell(id: number): OpenResult {
     const cell: CellData = field.value[id] as CellData
 
-    if (cell.isOpened || cell.visited) {
+    if (cell.isOpened) {
       return { count: 0, isBomb: false }
     }
 
@@ -44,7 +45,6 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
           cell.isOpened = true;
         }, level * DELAY_BETWEEN_LEVELS);
         count += 1
-        cell.visited = true
       });
 
       // Собираем клетки следующего уровня
@@ -74,25 +74,19 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
   function openCellHandler(id: number): Status {
     let result = openCell(id)
 
-    openedCount.value += result.count
-
     if (result.isBomb) {
-      openedCount.value = 0
-      status.value = 'loose'
-      return status.value
+      return 'loose'
     }
-    else if (openedCount.value === cellsToOpenCount.value) {
-      openedCount.value = 0
-      status.value = 'win'
-      return status.value
+    else if (openedCellsCount.value === cellsToOpenCount.value) {
+      return 'win'
     }
     else {
-      return status.value
+      return 'idle'
     }
   }
 
-  watch(openedCount, () => {
-    console.log('openedCount', openedCount.value)
+  watch(openedCellsCount, () => {
+    console.log('openedCount', openedCellsCount.value)
     console.log('cellsToOpenCount', cellsToOpenCount.value)
   })
 
