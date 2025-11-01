@@ -1,10 +1,10 @@
 <script setup lang="ts">
   import { computed, inject } from 'vue';
   import Modal from './Modal.vue';
-  import looseImg from '../assets/loose.jpg'
-  import badImg from '../assets/bad.jpg'
-  import normalImg from '../assets/normal.jpg'
-  import goodImg from '../assets/good.jpg'
+  import looseImg from '../../assets/loose.jpg'
+  import badImg from '../../assets/bad.jpg'
+  import normalImg from '../../assets/normal.jpg'
+  import goodImg from '../../assets/good.jpg'
 
   const { restart } = inject('restart') as { restart: () => void }
   const { lifes, gold } = inject('statResult') // TODO type
@@ -31,16 +31,16 @@
 
       <div v-if="!lifes" class="p-2 text-shadow-sm text-shadow-black">
         <p>Кракен разрушил ваш корабль.</p>
-        <p>Вы спаслись на плоту. В скором времени вы вновь соберете команду и отправитесь за сокровищами.</p>
+        <p>Но вы спаслись на плоту. В скором времени вы вновь соберете команду и отправитесь за сокровищами.</p>
       </div>
       <div v-else-if="goodEnd" class="p-2 text-shadow-sm text-shadow-black">
         <p>Вы нашли все сокровища! ({{ gold }})</p>
-        <p>С набитым трюмом золота вы отправились праздновать победу домой.</p>
+        <p>С набитым трюмом золота вы отправились домой праздновать победу.</p>
         <p>О вас будут складывать легенды!</p>
       </div>
       <div v-else-if="normalEnd" class="p-2 text-shadow-sm text-shadow-black">
         <p>Вы нашли много золота! ({{ gold }})</p>
-        <p>Вы перехитрили кракена, но собрали не все сокровища.</p>
+        <p>Пускай вы нашли и не все сокравища, зато выжили и отправились домой праздновать успешное путешествие!</p>
       </div>
       <div v-else-if="badEnd" class="p-2 text-shadow-sm text-shadow-black">
         <p>Вы не нашли золото, зато вернулись домой живым.</p>

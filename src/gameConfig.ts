@@ -6,3 +6,11 @@ export const GAME_CONFIG = {
   initialField: { rows: 18, cols: 12 },
   initialBombs: 10
 }
+
+export const BONUS = {
+  incKrakens1: { 'incKrakens': 1 },
+  incKrakens2: { 'incKrakens': 2 },
+  decRow: { 'decRow': 1 },
+  incGold: { 'incGold': 100 },
+  notHard: { 'notHard': 0 }
+}

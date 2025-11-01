@@ -1,4 +1,4 @@
-import { computed, ref, watch, type Ref } from "vue";
+import { computed, type Ref } from "vue";
 import type { CellData, FieldSize, Status } from "../types";
 import { getSiblingsCells } from "../utils/main";
 
@@ -84,11 +84,6 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
       return 'idle'
     }
   }
-
-  watch(openedCellsCount, () => {
-    console.log('openedCount', openedCellsCount.value)
-    console.log('cellsToOpenCount', cellsToOpenCount.value)
-  })
 
   return { openCellHandler }
 

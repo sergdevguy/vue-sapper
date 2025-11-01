@@ -11,7 +11,7 @@
 </script>
 
 <template>
-  <div class="fixed z-10 w-screen h-screen max-w-[400px] flex items-center justify-center select-none">
+  <div class="fixed top-0 left-0 z-10 w-screen h-screen flex items-center justify-center select-none bg-sky-950/50">
     <div
       class="py-4 px-6 min-w-[300px] min-h-[300px] flex flex-col justify-center text-center rounded-md bg-gray-900/90 text-white bg-cover bg-center"
       :style="bgStyle">

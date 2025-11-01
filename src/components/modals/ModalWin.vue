@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { inject } from 'vue';
-import Modal from './Modal.vue';
+import { inject } from 'vue'
+import Modal from './Modal.vue'
 
 const { updateBonus } = inject('bonus')
 </script>

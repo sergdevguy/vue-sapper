@@ -3,6 +3,7 @@ import type { Status } from "../types"
 import { useField } from "./useField"
 import { useGameLogic } from "./useGameLogic"
 import { useState } from "./useState"
+import { GAME_CONFIG } from "../gameConfig"
 
 export function useGame() {
 
@@ -11,6 +12,7 @@ export function useGame() {
   const { openCellHandler } = useGameLogic(field, state.value.fieldSize)
 
   const gameStatus = ref<Status>('idle')
+  const gamerResult = ref<Status>('idle')
 
   function handleCellOpen(id: number) {
     if (gameStatus.value === 'win' || gameStatus.value === 'loose') {
@@ -21,18 +23,27 @@ export function useGame() {
     gameStatus.value = result
 
     if (result === 'loose') {
-      resetGame()
-    }
-    if (result === 'win') {
-      resetGame()
+      stateActions.decLifes()
+      // gamerResult.value = 'loose'
+    } else if (result === 'win') {
+      stateActions.incLevel()
     }
   }
 
-  function resetGame() {
+  function selectBonus(bonus: any) {
     setTimeout(() => {
-      stateActions.reset()
+      if (bonus['incKrakens']) {
+        stateActions.incBombs(2)
+      } else if (bonus['decRow']) {
+        stateActions.decRows(1)
+      }
+
+      if (!state.value.lifes || state.value.level > GAME_CONFIG.totalLevels) {
+        stateActions.reset()
+      }
       fieldActions.reset(state.value.fieldSize, state.value.bombs)
       gameStatus.value = 'idle'
+      gamerResult.value = 'idle'
     }, 1000)
   }
 
@@ -41,7 +52,8 @@ export function useGame() {
   return {
     state,
     fieldRows,
-    actions: { handleCellOpen }
+    gamerResult,
+    actions: { handleCellOpen, selectBonus }
   }
 
 }

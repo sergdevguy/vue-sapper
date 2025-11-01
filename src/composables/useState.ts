@@ -9,7 +9,6 @@ export function useState() {
   function initBaseData(): State {
     return {
       status: 'idle',
-      bonus: '',
       lifes: GAME_CONFIG.initialLifes,
       gold: GAME_CONFIG.initialGold,
       level: GAME_CONFIG.initialLevel,
@@ -18,13 +17,29 @@ export function useState() {
     }
   }
 
+  function decLifes() {
+    state.value.lifes -= 1
+  }
+
+  function incLevel() {
+    state.value.level += 1
+  }
+
+  function incBombs(val: number) {
+    state.value.bombs += val
+  }
+
+  function decRows(val: number) {
+    state.value.fieldSize.rows -= val
+  }
+
   function reset() {
-    initBaseData()
+    state.value = initBaseData()
   }
 
   return { 
     state, 
-    stateActions: { reset } 
+    stateActions: { reset, incLevel, decLifes, incBombs, decRows } 
   }
 
 }
