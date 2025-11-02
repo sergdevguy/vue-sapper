@@ -1,5 +1,4 @@
 export type State = {
-  status: Status
   lifes: number
   gold: number
   level: number
@@ -7,7 +6,7 @@ export type State = {
   fieldSize: FieldSize
 }
 
-export type Status = 'idle' | 'loose' | 'win' | 'gameover'
+export type Status = 'idle' | 'loose' | 'win' | 'gameoverLoose' | 'gameoverWin'
 
 export type FieldSize = { rows: number, cols: number }
 

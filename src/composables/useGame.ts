@@ -12,8 +12,9 @@ export function useGame() {
   const { openCellHandler } = useGameLogic(field, state.value.fieldSize)
 
   const gameStatus = ref<Status>('idle')
-  const gamerResult = ref<Status>('idle')
+  const gameResult = ref<any>({ status: 'idle', gold: state.value.gold })
 
+  // TODO бардак с бонусами
   function handleCellOpen(id: number) {
     if (gameStatus.value === 'win' || gameStatus.value === 'loose') {
       return
@@ -24,18 +25,28 @@ export function useGame() {
 
     if (result === 'loose') {
       stateActions.decLifes()
-      // gamerResult.value = 'loose'
     } else if (result === 'win') {
       stateActions.incLevel()
     }
+
+    if (!state.value.lifes) {
+      gameResult.value = { status: 'gameoverLoose', gold: state.value.gold }
+    } else if (state.value.level > GAME_CONFIG.totalLevels) {
+      gameResult.value = { status: 'gameoverWin', gold: state.value.gold }
+    } else {
+      gameResult.value = { status: gameStatus.value, gold: state.value.gold }
+    }
   }
 
+  // TODO бардак с бонусами
   function selectBonus(bonus: any) {
     setTimeout(() => {
       if (bonus['incKrakens']) {
         stateActions.incBombs(2)
       } else if (bonus['decRow']) {
         stateActions.decRows(1)
+      } else if (bonus['incGold']) {
+        stateActions.incGold()
       }
 
       if (!state.value.lifes || state.value.level > GAME_CONFIG.totalLevels) {
@@ -43,8 +54,15 @@ export function useGame() {
       }
       fieldActions.reset(state.value.fieldSize, state.value.bombs)
       gameStatus.value = 'idle'
-      gamerResult.value = 'idle'
+      gameResult.value = { status: 'idle', gold: state.value.gold }
     }, 1000)
+  }
+
+  function reset() {
+    stateActions.reset()
+    fieldActions.init(state.value.fieldSize, state.value.bombs)
+    gameStatus.value = 'idle'
+    gameResult.value = { status: 'idle', gold: state.value.gold }
   }
 
   fieldActions.init(state.value.fieldSize, state.value.bombs)
@@ -52,8 +70,8 @@ export function useGame() {
   return {
     state,
     fieldRows,
-    gamerResult,
-    actions: { handleCellOpen, selectBonus }
+    gameResult,
+    actions: { handleCellOpen, selectBonus, reset }
   }
 
 }

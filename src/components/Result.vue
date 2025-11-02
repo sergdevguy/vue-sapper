@@ -1,12 +1,11 @@
 <script setup lang="ts">
   import { computed } from 'vue'
-  import type { Status } from '../types'
   import ModalLoose from './modals/ModalLoose.vue'
   import ModalWin from './modals/ModalWin.vue'
   import ModalGameover from './modals/ModalGameover.vue'
 
   const props = defineProps<{
-    result: Status | null
+    result: any
   }>()
 
   const emit = defineEmits<{
@@ -14,9 +13,9 @@
   }>()
 
   const currentModal = computed(() => {
-    if (props.result === 'loose') return ModalLoose
-    if (props.result === 'win') return ModalWin
-    if (props.result === 'gameover') return ModalGameover
+    if (props.result.status === 'loose') return ModalLoose
+    if (props.result.status === 'win') return ModalWin
+    if (props.result.status === 'gameoverLoose' || props.result === 'gameoverWin') return ModalGameover
   })
 
   function select(bonus: any) {
@@ -26,7 +25,7 @@
 
 <template>
   <Transition>
-    <component @select="select" :is="currentModal" />
+    <component :is="currentModal" :result @select="select" />
   </Transition>
 </template>
 

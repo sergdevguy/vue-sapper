@@ -24,7 +24,6 @@ export function useField() {
       isBomb: false,
       count: 0,
       isHighlight: false,
-      visited: false
     }))
   }
 

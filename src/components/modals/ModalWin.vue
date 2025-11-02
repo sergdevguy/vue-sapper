@@ -1,8 +1,20 @@
 <script setup lang="ts">
-import { inject } from 'vue'
-import Modal from './Modal.vue'
+  import { ref } from 'vue';
+  import { BONUS } from '../../gameConfig';
+  import Modal from './Modal.vue'
 
-const { updateBonus } = inject('bonus')
+  const emit = defineEmits<{
+    select: [id: number]
+  }>()
+
+  const isSelected = ref(false)
+
+  function select(bonus: any) {
+    if (!isSelected.value) {
+      emit('select', bonus)
+      isSelected.value = true
+    }
+  }
 </script>
 
 <template>
@@ -16,10 +28,12 @@ const { updateBonus } = inject('bonus')
     </template>
     <template #choice>
       <div class="flex justify-between gap-2">
-        <div @click="updateBonus('gold')" class="inline-flex items-center p-2 border-1 rounded-sm text-green-500 hover:bg-green-100/30 cursor-pointer">
+        <div @click="select(BONUS.incGold)"
+          class="inline-flex items-center p-2 border-1 rounded-sm text-green-500 hover:bg-green-100/30 cursor-pointer">
           <p>+ 100 золота</p>
         </div>
-        <div @click="updateBonus('notChangeDifficulty')" class="p-2 border-1 rounded-sm text-green-500 hover:bg-green-100/30 cursor-pointer">
+        <div @click="select(BONUS.notHard)"
+          class="p-2 border-1 rounded-sm text-green-500 hover:bg-green-100/30 cursor-pointer">
           <p>Не усложнять</p>
           <p>следующее поле</p>
         </div>

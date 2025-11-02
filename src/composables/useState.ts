@@ -8,7 +8,6 @@ export function useState() {
 
   function initBaseData(): State {
     return {
-      status: 'idle',
       lifes: GAME_CONFIG.initialLifes,
       gold: GAME_CONFIG.initialGold,
       level: GAME_CONFIG.initialLevel,
@@ -29,6 +28,10 @@ export function useState() {
     state.value.bombs += val
   }
 
+  function incGold() {
+    state.value.gold += 100
+  }
+
   function decRows(val: number) {
     state.value.fieldSize.rows -= val
   }
@@ -39,7 +42,7 @@ export function useState() {
 
   return { 
     state, 
-    stateActions: { reset, incLevel, decLifes, incBombs, decRows } 
+    stateActions: { reset, incLevel, decLifes, incBombs, decRows, incGold } 
   }
 
 }
