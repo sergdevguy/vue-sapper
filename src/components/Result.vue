@@ -15,7 +15,7 @@
   const currentModal = computed(() => {
     if (props.result.status === 'loose') return ModalLoose
     if (props.result.status === 'win') return ModalWin
-    if (props.result.status === 'gameoverLoose' || props.result === 'gameoverWin') return ModalGameover
+    if (props.result.status === 'gameoverLoose' || props.result.status === 'gameoverWin') return ModalGameover
   })
 
   function select(bonus: any) {

@@ -1,10 +1,12 @@
-import { computed, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import type { CellData, FieldSize, Status } from "../types";
 import { getSiblingsCells } from "../utils/main";
 
 type OpenResult = { count: number, isBomb: boolean }
 
-export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
+export function useGameLogic(field: Ref<CellData[]>) {
+
+  const size: any = ref(null)
 
   const openedCellsCount = computed(() =>
     field.value.filter(cell => cell.isOpened).length
@@ -12,6 +14,10 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
 
   const cellsToOpenCount = computed(() => {
     return field.value.length - field.value.filter((cell) => cell.isBomb).length
+  })
+
+  const isWinHack = computed(() => {
+    return openedCellsCount.value === cellsToOpenCount.value
   })
 
   function openCell(id: number): OpenResult {
@@ -53,7 +59,7 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
       for (const currentCell of currentLevel) {
         // Если клетка без цифры, добавляем ее соседей
         if (currentCell.count === 0) {
-          const siblings = getSiblingsCells(currentCell.id, field, size);
+          const siblings = getSiblingsCells(currentCell.id, field, size.value);
 
           for (const neighbor of siblings) {
             if (!visited.has(neighbor)) {
@@ -85,6 +91,10 @@ export function useGameLogic(field: Ref<CellData[]>, size: FieldSize) {
     }
   }
 
-  return { openCellHandler }
+  function updateSize(newSize: FieldSize) {
+    size.value = newSize
+  }
+
+  return { isWinHack, openCellHandler, updateSize }
 
 }
